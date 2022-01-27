@@ -1,0 +1,1 @@
+p8tool build picomon.p8 --lua ./src/main.lua --gfx ./src/assets.p8 --gff ./src/assets.p8 --sfx ./src/assets.p8 --map ./src/assets.p8
