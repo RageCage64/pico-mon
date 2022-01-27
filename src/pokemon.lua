@@ -1,6 +1,18 @@
 -- Constructor
 
 function new_pokemon(name, enemy, front_sprite, back_sprite, cry)
+    enemy_x = 78
+    enemy_y = 8
+    player_x = 12
+    player_y = 56
+
+    p_x = player_x
+    p_y = player_y
+    if enemy then
+        p_x = enemy_x
+        p_y = enemy_y
+    end
+
     return {
         name = name,
         enemy = enemy,
@@ -9,8 +21,8 @@ function new_pokemon(name, enemy, front_sprite, back_sprite, cry)
         cry = cry,
         -- moves = moves,
 
-        x = 0,
-        y = 0,
+        x = p_x,
+        y = p_y,
 
         appeared = false,
     }
@@ -22,8 +34,6 @@ function appear(p)
     if p.appeared then
         return
     end
-
-    draw_p(p)
     cry(p)
     p.appeared = true
 end
@@ -37,11 +47,11 @@ function draw_p(p)
 end
 
 function draw_front(p)
-    draw(p.front_sprite, p.x, p.y)
+    draw_p_spr(p.front_sprite, p.x, p.y)
 end
 
 function draw_back(p)
-    draw(p.back_sprite, p.x, p.y)
+    draw_p_spr(p.back_sprite, p.x, p.y)
 end
 
 function cry(p)
@@ -49,6 +59,12 @@ function cry(p)
 end
 
 --Pokemon
+
+function choose(name, enemy)
+    if name == "axoleafel" then
+        return axoleafel(enemy)
+    end
+end
 
 function axoleafel(enemy)
     return new_pokemon(
@@ -63,7 +79,7 @@ end
 
 -- Functions
 
-function draw(start, x, y)
+function draw_p_spr(start, x, y)
     for i=0,3 do
         tile_row = 16 * i
         spr_row = 8 * i

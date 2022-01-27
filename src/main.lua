@@ -1,36 +1,40 @@
 require("pokemon.lua")
 require("textbox.lua")
-
-
-main_txb = new_textbox(2, 98, 124, 124)
-
-enemy_x = 78
-enemy_y = 8
-player_x = 12
-player_y = 56
+require("game.lua")
 
 function _init()
   cls(0)
-  p_player = axoleafel(false)
-  p_player.x = player_x
-  p_player.y = player_y
-  p_enemy = axoleafel(true)
-  p_enemy.x = enemy_x
-  p_enemy.y = enemy_y
 
-  -- appear(p_enemy)
-  -- main_txb.current_text = "enemy " .. p_enemy.name .. " appeared!"
+  states = {}
+  states["start_menu"] = start_menu() 
+  states["pick_player"] = pick_state(false, "pick_player", "pick_enemy")
+  states["pick_enemy"] = pick_state(true, "pick_enemy", "appear_enemy")
+  states["appear_enemy"] = appear_enemy()
+  states["appear_player"] = appear_player()
+  -- states["player_turn"] = new_state("player_turn")
 
-  appear(p_player)
-  main_txb.current_text = "go " .. p_enemy.name .. "!"
+  gm = new_game("start_menu")
+  states[gm.state].init(gm)
 end
 
 function _draw()
   cls(0)
-  draw_p(p_enemy)
-  draw_p(p_player)
-  draw_txb(main_txb)
+  states[gm.state].draw(gm)
 end
 
 function _update()
+  next_state = states[gm.state].update(gm)
+
+  t = states[gm.state].timer
+  if t then
+    if t <= 0 then 
+      next_state = true 
+    end
+    states[gm.state].timer = t - 1
+  end 
+
+  if next_state then
+    gm.state = states[gm.state].next
+    states[gm.state].init(gm)
+  end
 end
