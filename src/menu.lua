@@ -1,6 +1,8 @@
--- Constructor
+-- Constants 
 
 cursor_spr = 207
+
+-- Constructor
 
 function new_menu(x, y, w, h, options)
     return {

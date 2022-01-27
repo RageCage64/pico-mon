@@ -1,16 +1,11 @@
 -- Constructor
 
 function new_pokemon(name, enemy, front_sprite, back_sprite, cry)
-    enemy_x = 78
-    enemy_y = 8
-    player_x = 12
-    player_y = 56
-
-    p_x = player_x
-    p_y = player_y
+    p_x = 12
+    p_y = 56
     if enemy then
-        p_x = enemy_x
-        p_y = enemy_y
+        p_x = 78
+        p_y = 8
     end
 
     return {
@@ -19,7 +14,6 @@ function new_pokemon(name, enemy, front_sprite, back_sprite, cry)
         front_sprite = front_sprite,
         back_sprite = back_sprite,
         cry = cry,
-        -- moves = moves,
 
         x = p_x,
         y = p_y,
@@ -38,6 +32,10 @@ function appear(p)
     p.appeared = true
 end
 
+function cry(p)
+    sfx(p.cry)
+end
+
 function draw_p(p)
     if p.enemy then
         draw_front(p)
@@ -54,8 +52,16 @@ function draw_back(p)
     draw_p_spr(p.back_sprite, p.x, p.y)
 end
 
-function cry(p)
-    sfx(p.cry)
+function draw_p_spr(start, x, y)
+    for i=0,3 do
+        tile_row = 16 * i
+        spr_row = 8 * i
+        for k=0,3 do
+            spr_column = 8 * k
+            tile = start + tile_row + k
+            spr(tile, x+spr_column, y+spr_row)
+        end
+    end
 end
 
 --Pokemon
@@ -75,18 +81,4 @@ function axoleafel(enemy)
         0
         -- {}
     )
-end
-
--- Functions
-
-function draw_p_spr(start, x, y)
-    for i=0,3 do
-        tile_row = 16 * i
-        spr_row = 8 * i
-        for k=0,3 do
-            spr_column = 8 * k
-            tile = start + tile_row + k
-            spr(tile, x+spr_column, y+spr_row)
-        end
-    end
 end

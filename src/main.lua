@@ -1,17 +1,12 @@
-require("pokemon.lua")
-require("textbox.lua")
 require("game.lua")
 
 function _init()
-  cls(0)
-
   states = {}
   states["start_menu"] = start_menu() 
   states["pick_player"] = pick_state(false, "pick_player", "pick_enemy")
   states["pick_enemy"] = pick_state(true, "pick_enemy", "appear_enemy")
   states["appear_enemy"] = appear_enemy()
   states["appear_player"] = appear_player()
-  -- states["player_turn"] = new_state("player_turn")
 
   gm = new_game("start_menu")
   states[gm.state].init(gm)
