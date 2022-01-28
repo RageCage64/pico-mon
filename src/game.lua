@@ -2,6 +2,8 @@ require("pokemon.lua")
 require("textbox.lua")
 require("menu.lua")
 
+-- Game Constructor
+
 function new_game(start_state)
     return {
         player = nil,
@@ -10,8 +12,19 @@ function new_game(start_state)
         menu = nil,
         state = start_state,
         lockout = 0,
+
+        player_move = nil,
+        enemy_move = nil,
     }
 end
+
+-- Game methods
+
+function set_txb(g, s)
+    g.main_txb.current_text = s
+end
+
+-- State Constructor
 
 function new_state(name, init, draw, update, next, timer)
     return {
@@ -50,22 +63,19 @@ function pick_state(enemy, name, next)
         menu = pokemon_menu()
         g.menu = menu
         if enemy then
-            g.main_txb.current_text = "choose your enemy's pokemon"
+            set_txb(g, "choose your enemy's pokemon")
         else 
-            g.main_txb.current_text = "choose your pokemon"
+            set_txb(g, "choose your pokemon")
         end
     end
 
     update = function(g)
-        if g.lockout > 0 then
-            g.lockout = g.lockout - 1
-            return false
-        end
-
         if btn(2) then
             m_up(g.menu)
+            g.lockout = 4
         elseif btn(3) then
             m_down(g.menu)
+            g.lockout = 4
         end
 
         if btn(4) then
@@ -94,7 +104,7 @@ end
 function appear_enemy()
     init = function(g)
         appear(g.enemy)
-        g.main_txb.current_text = "enemy " .. g.enemy.name .. " appeared!"
+        set_txb(g, "enemy " .. g.enemy.name .. " appeared!")
     end
 
     update = function(g)
@@ -111,7 +121,7 @@ end
 function appear_player()
     init = function(g)
         appear(g.player)
-        g.main_txb.current_text = "go " .. g.player.name .. "!"
+        set_txb(g, "go " .. g.player.name .. "!")
     end
 
     update = function(g)
@@ -123,5 +133,100 @@ function appear_player()
         draw_txb(g.main_txb)
     end
 
-    return new_state("appear_player", init, draw, update, "appear_player", 80)
+    return new_state("appear_player", init, draw, update, "player_choose_move", 80)
+end
+
+function player_choose_move()
+    init = function(g)
+        set_txb(g, "")
+        g.menu = move_menu(g.player)
+    end
+
+    update = function(g)
+        if btn(2) then
+            m_up(g.menu)
+            g.lockout = 4
+        elseif btn(3) then
+            m_down(g.menu)
+            g.lockout = 4
+        end
+
+        if btn(4) then
+            m_name = m_select(g.menu)
+            g.player_move = g.player.moves[m_name] 
+            g.menu = nil
+            return true
+        end
+
+        return false
+    end
+
+    draw = function(g)
+        draw_p(g.enemy)
+        draw_health(g.enemy)
+        draw_p(g.player)
+        draw_health(g.player)
+        draw_m(g.menu)
+    end
+
+    return new_state("player_choose_move", init, draw, update, "enemy_choose_move")
+end
+
+function enemy_choose_move()
+    init = function(g)
+    end
+
+    update = function(g)
+        g.enemy_move = choose_random_move(p) 
+        return true
+    end
+
+    draw = function(g)
+        draw_p(g.enemy)
+        draw_health(g.enemy)
+        draw_p(g.player)
+        draw_health(g.player)
+    end
+
+    return new_state("enemy_choose_move", init, draw, update, "player_turn")
+end
+
+function player_turn()
+    init = function(g)
+        set_txb(g, g.player.name .. " used " .. g.player_move.name)
+        g.enemy.health = g.enemy.health - g.player_move.damage
+    end
+
+    update = function(g)
+    end
+
+    draw = function(g)
+        draw_p(g.enemy)
+        draw_health(g.enemy)
+        draw_p(g.player)
+        draw_health(g.player)
+        draw_txb(g.main_txb)
+    end
+
+    return new_state("player_turn", init, draw, update, "enemy_turn", 80)
+end
+
+function enemy_turn()
+    init = function(g)
+        set_txb(g, g.enemy.name .. " used " .. g.enemy_move.name)
+        g.player.health = g.player.health - g.enemy_move.damage
+    end
+
+    update = function(g)
+    end
+
+    draw = function(g)
+        draw_p(g.enemy)
+        draw_health(g.enemy)
+        draw_p(g.player)
+        draw_health(g.player)
+        draw_txb(g.main_txb)
+    end
+
+    return new_state("enemy_turn", init, draw, update, "player_choose_move", 80)
 end

@@ -1,11 +1,19 @@
+require("menu.lua")
+require("move.lua")
+
 -- Constructor
 
-function new_pokemon(name, enemy, front_sprite, back_sprite, cry)
+function new_pokemon(name, enemy, front_sprite, back_sprite, cry, health, moves)
     p_x = 12
     p_y = 56
     if enemy then
         p_x = 78
         p_y = 8
+    end
+
+    move_table = {}
+    for i,m in ipairs(moves) do
+        move_table[m.name] = m
     end
 
     return {
@@ -14,6 +22,10 @@ function new_pokemon(name, enemy, front_sprite, back_sprite, cry)
         front_sprite = front_sprite,
         back_sprite = back_sprite,
         cry = cry,
+        health = health,
+        max_health = health,
+
+        moves = move_table,
 
         x = p_x,
         y = p_y,
@@ -22,7 +34,7 @@ function new_pokemon(name, enemy, front_sprite, back_sprite, cry)
     }
 end
 
--- Pokemon methods
+-- Methods
 
 function appear(p)
     if p.appeared then
@@ -64,7 +76,40 @@ function draw_p_spr(start, x, y)
     end
 end
 
---Pokemon
+function move_menu(p)
+    move_names = {}
+    for n in pairs(p.moves) do
+        add(move_names, n)
+    end
+    return new_menu(76, 84, move_names)
+end
+
+function choose_random_move(p)
+    move_names = {}
+    for n in pairs(p.moves) do
+        add(move_names, n)
+    end
+    choice = flr(rnd(4)) + 1
+    choice_move = move_names[choice]
+    return p.moves[choice_move]
+end
+
+function draw_health(p)
+    h = tostr(p.health) .. "/" .. tostr(p.max_health)
+    if p.enemy then
+        print(h, 56, 16)
+    else
+        print(h, 46, 66)
+    end
+end
+
+-- Pokemon builders
+
+function pokemon_menu()
+    return new_menu(30, 8, {
+        "axoleafel",
+    })
+end
 
 function choose(name, enemy)
     if name == "axoleafel" then
@@ -78,7 +123,13 @@ function axoleafel(enemy)
         enemy,
         4,
         8,
-        0
-        -- {}
+        0,
+        50,
+        {
+            tackle(),
+            wrap(),
+            grass_knot(),
+            leaf_blade(),
+        }
     )
 end

@@ -7,6 +7,10 @@ function _init()
   states["pick_enemy"] = pick_state(true, "pick_enemy", "appear_enemy")
   states["appear_enemy"] = appear_enemy()
   states["appear_player"] = appear_player()
+  states["player_choose_move"] = player_choose_move()
+  states["enemy_choose_move"] = enemy_choose_move()
+  states["player_turn"] = player_turn()
+  states["enemy_turn"] = enemy_turn()
 
   gm = new_game("start_menu")
   states[gm.state].init(gm)
@@ -18,7 +22,12 @@ function _draw()
 end
 
 function _update()
-  next_state = states[gm.state].update(gm)
+  if gm.lockout > 0 then
+      gm.lockout = gm.lockout - 1
+      return false
+  else
+    next_state = states[gm.state].update(gm)
+  end
 
   t = states[gm.state].timer
   if t then
