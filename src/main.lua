@@ -33,6 +33,7 @@ function _update()
   if t then
     if t <= 0 then 
       next_state = true 
+      states[gm.state].timer = states[gm.state].timer_max
     end
     states[gm.state].timer = t - 1
   end 

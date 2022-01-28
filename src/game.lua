@@ -34,6 +34,7 @@ function new_state(name, init, draw, update, next, timer)
         update = update,
         next = next,
         timer = timer,
+        timer_max = timer,
         next_state = false,
     }
 end
@@ -140,6 +141,8 @@ function player_choose_move()
     init = function(g)
         set_txb(g, "")
         g.menu = move_menu(g.player)
+        states["player_turn"].timer = 80
+        states["enemy_turn"].timer = 80
     end
 
     update = function(g)
@@ -163,9 +166,9 @@ function player_choose_move()
 
     draw = function(g)
         draw_p(g.enemy)
-        draw_health(g.enemy)
+        draw_status(g.enemy)
         draw_p(g.player)
-        draw_health(g.player)
+        draw_status(g.player)
         draw_m(g.menu)
     end
 
@@ -183,9 +186,9 @@ function enemy_choose_move()
 
     draw = function(g)
         draw_p(g.enemy)
-        draw_health(g.enemy)
+        draw_status(g.enemy)
         draw_p(g.player)
-        draw_health(g.player)
+        draw_status(g.player)
     end
 
     return new_state("enemy_choose_move", init, draw, update, "player_turn")
@@ -194,7 +197,7 @@ end
 function player_turn()
     init = function(g)
         set_txb(g, g.player.name .. " used " .. g.player_move.name)
-        g.enemy.health = g.enemy.health - g.player_move.damage
+        attack(g.enemy, g.player_move)
     end
 
     update = function(g)
@@ -202,9 +205,9 @@ function player_turn()
 
     draw = function(g)
         draw_p(g.enemy)
-        draw_health(g.enemy)
+        draw_status(g.enemy)
         draw_p(g.player)
-        draw_health(g.player)
+        draw_status(g.player)
         draw_txb(g.main_txb)
     end
 
@@ -214,7 +217,7 @@ end
 function enemy_turn()
     init = function(g)
         set_txb(g, g.enemy.name .. " used " .. g.enemy_move.name)
-        g.player.health = g.player.health - g.enemy_move.damage
+        attack(g.player, g.enemy_move)
     end
 
     update = function(g)
@@ -222,9 +225,9 @@ function enemy_turn()
 
     draw = function(g)
         draw_p(g.enemy)
-        draw_health(g.enemy)
+        draw_status(g.enemy)
         draw_p(g.player)
-        draw_health(g.player)
+        draw_status(g.player)
         draw_txb(g.main_txb)
     end
 

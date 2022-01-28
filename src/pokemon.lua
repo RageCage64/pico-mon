@@ -81,7 +81,7 @@ function move_menu(p)
     for n in pairs(p.moves) do
         add(move_names, n)
     end
-    return new_menu(76, 84, move_names)
+    return new_menu(68, 84, move_names)
 end
 
 function choose_random_move(p)
@@ -94,12 +94,22 @@ function choose_random_move(p)
     return p.moves[choice_move]
 end
 
-function draw_health(p)
+function draw_status(p)
     h = tostr(p.health) .. "/" .. tostr(p.max_health)
     if p.enemy then
-        print(h, 56, 16)
+        print(p.name, 16, 8)
+        print(h, 16, 16)
     else
-        print(h, 46, 66)
+        print(p.name, 50, 58)
+        print(h, 50, 66)
+    end
+end
+
+function attack(p, move)
+    dmg = flr(rnd(move.damage)) + 1
+    p.health = p.health - dmg
+    if p.health < 0 then
+        p.health = 0
     end
 end
 
@@ -108,12 +118,24 @@ end
 function pokemon_menu()
     return new_menu(30, 8, {
         "axoleafel",
+        "paraplat",
+        "rainborachnid",
+        "fumineral",
+        "antagonice",
     })
 end
 
 function choose(name, enemy)
     if name == "axoleafel" then
         return axoleafel(enemy)
+    elseif name == "paraplat" then 
+        return paraplat(enemy)
+    elseif name == "rainborachnid" then 
+        return rainborachnid(enemy)
+    elseif name == "fumineral" then 
+        return fumineral(enemy)
+    elseif name == "antagonice" then 
+        return antagonice(enemy)
     end
 end
 
@@ -130,6 +152,74 @@ function axoleafel(enemy)
             wrap(),
             grass_knot(),
             leaf_blade(),
+        }
+    )
+end
+
+function paraplat(enemy)
+    return new_pokemon(
+        "paraplat",
+        enemy,
+        0,
+        12,
+        1,
+        50,
+        {
+            tackle(),
+            slam(),
+            psychic(),
+            psybeam(),
+        }
+    )
+end
+
+function rainborachnid(enemy)
+    return new_pokemon(
+        "rainborachnid",
+        enemy,
+        64,
+        68,
+        2,
+        50,
+        {
+            leech_life(),
+            tail_glow(),
+            bug_buzz(),
+            aurora_beam(),
+        }
+    )
+end
+
+function fumineral(enemy)
+    return new_pokemon(
+        "fumineral",
+        enemy,
+        72,
+        76,
+        3,
+        50,
+        {
+            smokescreen(),
+            flash_cannon(),
+            double_edge(),
+            blast_burn(),
+        }
+    )
+end
+
+function antagonice(enemy)
+    return new_pokemon(
+        "antagonice",
+        enemy,
+        128,
+        132,
+        4,
+        50,
+        {
+            taunt(),
+            ice_punch(),
+            ice_shard(),
+            swagger(),
         }
     )
 end
